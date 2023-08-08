@@ -1,4 +1,5 @@
 const ConfirmedOrders = require('../../models/ConfirmedOrders');
+const ResaleProducts = require('../../models/ResaleProducts');
 
 /**
  * Place Order
@@ -8,15 +9,36 @@ const ConfirmedOrders = require('../../models/ConfirmedOrders');
  */
 const placeOrder = async (request, response) => {
     try {
-        const { orderId, items, shippingAddress } = request.body;
+        const { orderId, userEmail, items, shippingAddress } = request.body;
 
         const newOrder = new ConfirmedOrders({
             orderId,
             items,
+            userEmail,
             shippingAddress
         });
 
         await newOrder.save();
+        items.forEach(async (item) => {
+            const oldItem = await ResaleProducts.findOne({ _id: item._id, userEmail: userEmail });                          
+            if (oldItem) {                 
+                await ResaleProducts.deleteOne({ _id: oldItem._id });             
+            }
+            const newResaleProduct = new ResaleProducts({
+                name: item.name,
+                description: item.description,
+                price: item.price,
+                shipping_cost: item.shipping_cost,
+                rating: item.rating,
+                category: item.category,
+                userEmail: userEmail,
+                image_url: item.image_url
+            });
+
+            await newResaleProduct.save();
+        });
+
+    
 
         response.status(200).json({
             message: "Order placed successfully"
@@ -36,7 +58,8 @@ const placeOrder = async (request, response) => {
  */
 const getAllOrders = async (request, response) => {
     try {
-        let orders = await ConfirmedOrders.find();  
+        const { userEmail } = request.body;
+        let orders = await ConfirmedOrders.find({ userEmail });  
         orders = orders.map(order => {
             const { _id, orderId, createdAt, updatedAt } = order.toObject();
             return { _id, orderId, createdAt, updatedAt };

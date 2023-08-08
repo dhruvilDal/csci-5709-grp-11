@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const cartSchema = mongoose.Schema({
+const ResaleProductSchema = mongoose.Schema({
     name: {
         type: String,
         required: true,
@@ -29,12 +29,16 @@ const cartSchema = mongoose.Schema({
         type: String,
         required: true,
     },
-    email:{
-        type:String,
-        required: true
+    userEmail: {
+        type: String,
+        required: true,
+    },
+    isResold: {
+        type: Boolean,
+        default: false,
     }
 }, { timestamps: true });
 
-const Cart = mongoose.model('cart', productSchema, 'cart');
+const ResaleProduct = mongoose.model('ResaleProducts', ResaleProductSchema);
 
-module.exports = Cart
+module.exports = ResaleProduct;

@@ -8,6 +8,7 @@ const userRoutes = require('./routes/userRoutes');
 const productsRoutes = require('./routes/productsRoutes');
 const adminRoutes = require('./routes/adminRoutes.js');
 const orderRoutes = require('./routes/orderRoutes');
+const resaleProductsRoute = require('./routes/resaleProductsRoute');
 const userDashboardRoutes = require('./routes/userDashboardRoutes');
 const mongoose = require('mongoose')
 
@@ -16,7 +17,7 @@ app.use(cors()); // Enable CORS for all routes
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-app.use('/', productsRoutes);
+app.use('/product', productsRoutes);
 // app.use('/cart_db',productsRoutes);
 
 // app.use('/', authenticationRouter);
@@ -35,6 +36,9 @@ app.use('/dashboard', userDashboardRoutes)
 
 // Order Routes
 app.use('/order', orderRoutes);
+
+// Resale Product Routes
+app.use('/resale', resaleProductsRoute);
 
 app.use(function (req, res, next) {
     next(createError(404));
